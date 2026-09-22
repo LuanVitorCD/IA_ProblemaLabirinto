@@ -237,7 +237,6 @@ def create_maze_figure(rows, cols):
     for spine in ax.spines.values():
         spine.set_visible(False)
 
-    ax.set_title("Solução de Labirinto com A*", color="white", fontsize=16, pad=15)
     return fig, ax, im
 
 
@@ -321,13 +320,16 @@ def main():
         """
         <style>
         .block-container { padding-top: 2rem !important; padding-bottom: 0rem !important; }
-        div { text-align: justify; }
+        div { text-align: left; }
         [data-testid="stImage"] { display: flex; justify-content: center; align-items: center; width: 100% !important; }
         [data-testid="stImage"] img {
             max-height: 75vh !important;
             width: auto !important;
             object-fit: contain !important;
             border-radius: 8px;
+        }
+        section[data-testid="stSidebar"] {
+            width: 430px !important;
         }
         </style>
         """,
