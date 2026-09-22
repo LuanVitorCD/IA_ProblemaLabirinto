@@ -353,7 +353,7 @@ def main():
                 🔹 <b>H(n)</b>: Estimativa heurística até o destino.
             </div>
             """
-    with st.sidebar.expander("Explicação & Complexidade", expanded=False, icon="ℹ️"):
+    with st.sidebar.expander("Explicação e Complexidade", expanded=False, icon="ℹ️"):
         st.markdown(info_html, unsafe_allow_html=True)
 
     st.sidebar.divider()
