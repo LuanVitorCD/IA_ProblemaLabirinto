@@ -331,6 +331,9 @@ def main():
         section[data-testid="stSidebar"] {
             width: 450px !important;
         }
+        [data-testid="stSidebarContent"] {
+            overflow-y: hidden !important;
+        }
         section[data-testid="stSidebar"] > div:not([data-testid="stSidebarContent"]) {
             display: none !important;
             width: 0px !important;
@@ -339,6 +342,13 @@ def main():
         div[data-testid="stSidebarCollapseButton"] {
             display: inline !important;
             visibility: inline !important;
+        }
+        div[data-testid="stPopover"]{
+            color: rgb(79,146,79) !important;
+        }
+        div[data-testid="stPopover"] > div{
+            border: 1px solid rgba(79, 146, 79, 0.5) !important;
+            border-radius: 10px !important;
         }
         </style>
         """,
@@ -355,61 +365,51 @@ def main():
     st.sidebar.markdown(title_html, unsafe_allow_html=True)
     st.sidebar.markdown("<br>", unsafe_allow_html=True)
 
-    info_html = """
-            <div style='background-color: #1e1e1e; padding: 15px; border-radius: 5px; border-left: 2px solid #5ea1ff; font-size: 16px; margin-bottom: 15px;'>
-                <b style='color: #5ea1ff;'>Busca Informada: Algoritmo A*</b><br>
+    info_html = f"""
+            <div style='background-color: #1e1e1e; padding: 15px; border-radius: 5px; border-left: 2px solid {primary_color}; font-size: 16px; margin-bottom: 15px;'>
+                <b style='color: {primary_color};'>Busca Informada: Algoritmo A*</b><br>
                 O algoritmo A* possui complexidade de tempo de <b>O(b^d)</b> no pior caso, onde <i>b</i> é o fator de ramificação e <i>d</i> a profundidade da solução.<br><br>
                 Para encontrar o menor caminho eficientemente, o A* avalia <b>F(n) = G(n) + H(n)</b> para cada quadro:<br>
-                🔹 <b>G(n)</b>: Custo exato desde a origem.<br>
-                🔹 <b>H(n)</b>: Estimativa heurística até o destino.
+                <b style='color: {primary_color};'>•</b> <b>G(n)</b>: Custo exato desde a origem.<br>
+                <b style='color: {primary_color};'>•</b> <b>H(n)</b>: Estimativa heurística até o destino.
             </div>
             """
-    with st.sidebar.expander("Explicação e Complexidade", expanded=False, icon="ℹ️"):
+    with st.sidebar.popover("Explicação e Complexidade", icon=":material/chat_info:", use_container_width=True):
         st.markdown(info_html, unsafe_allow_html=True)
 
     st.sidebar.divider()
 
+    with st.sidebar.form("maze_config_form"):
+        st.subheader("Mapa do Labirinto")
+        st.radio("Tamanho", list(SIZE_OPTIONS.keys()), key="cfg_size", horizontal=True)
+        st.slider("Densidade de Obstáculos (%)", min_value=0, max_value=50, step=5, key="cfg_density")
+
+        col_apply, col_reset = st.columns(2)    
+        aplicar = col_apply.form_submit_button(":material/check: Aplicar e gerar", type="primary", use_container_width=True)
+        resetar = col_reset.form_submit_button("↺ Resetar", use_container_width=True)
+
+    st.sidebar.write(" ")
+
     # ---------------------------------------------------------
     # TÉCNICAS DE BUSCA E CONTROLE
     # ---------------------------------------------------------
-    st.sidebar.subheader("Técnicas de Busca")
-    diagonal_enabled = st.sidebar.checkbox(
-        "↗️ Permitir movimento diagonal", value=False, key="diagonal_enabled",
+
+    diagonal_enabled = st.sidebar.toggle(
+        ":primary[:material/launch:] Permitir movimento diagonal", value=False, key="diagonal_enabled",
         help="Desligado: heurística de Manhattan (4 direções). Ligado: heurística Octile (8 direções).",
     )
     algo_label = "Octile (8 direções)" if diagonal_enabled else "Manhattan (4 direções)"
-    st.sidebar.caption(f"Heurística ativa: **{algo_label}**")
-    
-    animar = st.sidebar.checkbox("▶️ Ativar Animação", value=True, help="Visualiza o progresso do algoritmo passo a passo.")
 
+    show_costs = st.sidebar.toggle(":primary[:material/calculate:] Exibir Cálculos nos Quadros", value=False, key="cfg_show_costs", help="Exibe os valores de F, G e H em cada nó explorado. Pode poluir a tela em grids grandes.")
+
+    animar = st.sidebar.toggle(":primary[:material/slideshow:] Ativar Animação", value=True, help="Visualiza o progresso do algoritmo passo a passo.")
+    
     st.sidebar.divider()
 
     start_btn = st.sidebar.button("Iniciar Busca (A*)", type="primary", use_container_width=True)
 
-    st.sidebar.divider()
-
-    # ---------------------------------------------------------
-    # CONFIGURAÇÕES AVANÇADAS
-    # ---------------------------------------------------------
-    with st.sidebar.popover("⚙️ Configurações Avançadas", use_container_width=True):
-        with st.form("maze_config_form"):
-            st.subheader("Mapa do Labirinto")
-            st.radio("Tamanho", list(SIZE_OPTIONS.keys()), key="cfg_size", horizontal=True)
-            st.slider("Densidade de Obstáculos (%)", min_value=0, max_value=50, step=5, key="cfg_density")
-
-            col_apply, col_reset = st.columns(2)
-            aplicar = col_apply.form_submit_button("✅ Aplicar", type="primary", use_container_width=True)
-            resetar = col_reset.form_submit_button("↺ Resetar", use_container_width=True)
-
-        st.divider()
-        st.subheader("Variáveis Visuais")
-        show_costs = st.toggle("Exibir Cálculos nos Quadros (F, G, H)", value=True, key="cfg_show_costs")
-        if show_costs and st.session_state.grid.shape[0] > 25:
-            st.warning("Visualizar os custos pode poluir a tela em grids maiores que 25x25.")
-        st.info(
-            f"Com a configuração atual, a busca usa a heurística **{algo_label}**. "
-            "Ative o movimento diagonal ao lado para permitir atalhos na diagonal."
-        )
+    if show_costs and st.session_state.grid.shape[0] > 25:
+        st.toast("Visualizar os custos pode poluir a tela em grids maiores que 25x25.", icon="⚠️")
 
     if aplicar:
         apply_maze_config(st.session_state.cfg_size, st.session_state.cfg_density)
@@ -430,7 +430,8 @@ def main():
     col_metrics, col_chart = st.columns([1, 3])
 
     with col_metrics:
-        st.subheader("Estatísticas")
+        st.header("Estatísticas")
+        st.caption(f"Heurística ativa: **{algo_label}**")
         metric_path = st.empty()
         metric_explored = st.empty()
         metric_status = st.empty()
