@@ -10,7 +10,7 @@ import io
 # ---------------------------------------------------------
 # CONFIGURAÇÕES E ESTADOS DA SESSÃO
 # ---------------------------------------------------------
-st.set_page_config(page_title="Labirinto - Algoritmo A*", layout="wide", page_icon=":material/star:", initial_sidebar_state="expanded")
+st.set_page_config(page_title="Labirinto - Algoritmo A*", layout="wide", page_icon="⭐", initial_sidebar_state="expanded")
 
 SIZE_OPTIONS = {"Pequeno": 10, "Médio": 20, "Grande": 35}
 DEFAULT_SIZE_LABEL = "Médio"
