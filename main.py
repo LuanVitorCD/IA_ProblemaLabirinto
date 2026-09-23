@@ -347,7 +347,7 @@ def main():
 
     title_html = f"""
                 <div style='background-color: #1e1e1e; padding: 5px; border-radius: 5px; border-left: 4px solid {primary_color};'>
-                    <h1 style='font-size: 32px; margin-left: 10px;'><b>Solucionador de Labirinto</b><br>
+                    <h1 style='font-size: 32px; margin-left: 10px;'><b>Problema do Labirinto</b><br>
                         <i style='font-size: 20px; margin-left: 10px;'><b style='color: {primary_color};'>Grupo: </b> Ana, Luan e Wesley</i>
                     </h1>
                 </div>
