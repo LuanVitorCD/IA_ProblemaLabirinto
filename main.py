@@ -10,7 +10,7 @@ import io
 # ---------------------------------------------------------
 # CONFIGURAÇÕES E ESTADOS DA SESSÃO
 # ---------------------------------------------------------
-st.set_page_config(page_title="Labirinto - Algoritmo A*", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="Labirinto - Algoritmo A*", layout="wide", page_icon=":material/star:", initial_sidebar_state="expanded")
 
 SIZE_OPTIONS = {"Pequeno": 10, "Médio": 20, "Grande": 35}
 DEFAULT_SIZE_LABEL = "Médio"
@@ -329,7 +329,16 @@ def main():
             border-radius: 8px;
         }
         section[data-testid="stSidebar"] {
-            min-width: 450px !important;
+            width: 450px !important;
+        }
+        section[data-testid="stSidebar"] > div:not([data-testid="stSidebarContent"]) {
+            display: none !important;
+            width: 0px !important;
+            pointer-events: none !important;
+        }
+        div[data-testid="stSidebarCollapseButton"] {
+            display: inline !important;
+            visibility: inline !important;
         }
         </style>
         """,
