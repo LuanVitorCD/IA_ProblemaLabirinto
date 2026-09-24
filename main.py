@@ -1,6 +1,7 @@
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 import heapq
 import math
 import time
@@ -25,12 +26,12 @@ STEP_DIAG = math.sqrt(2)
 
 # Cores usadas na renderização (centralizadas para evitar "números mágicos" espalhados)
 COLOR_WALL = (0.9, 0.9, 0.95)     # Obstáculo / Parede
-COLOR_FREE = (0.08, 0.09, 0.11)   # Caminho livre
+COLOR_FREE = (0.12, 0.12, 0.12)   # Caminho livre
 COLOR_CLOSED = (0.4, 0.1, 0.4)    # Nós explorados (fechados)
-COLOR_OPEN = (0.1, 0.4, 0.1)      # Fronteira (abertos)
-COLOR_PATH = (0.37, 0.63, 1.0)    # Caminho final encontrado
-COLOR_START = (0.0, 1.0, 0.0)     # Início
-COLOR_END = (1.0, 0.3, 0.3)       # Destino
+COLOR_OPEN = (0.7, 0.5, 0.1)      # Fronteira (abertos)
+COLOR_PATH = (0.1, 0.4, 0.1)    # Caminho final encontrado
+COLOR_START = (0.23, 0.31, 0.94)     # Início
+COLOR_END = (0.7, 0.3, 0.3)       # Destino
 
 
 def generate_solvable_maze(rows, cols, density=0.25):
@@ -232,10 +233,36 @@ def create_maze_figure(rows, cols):
     ax.set_xticks(np.arange(-0.5, cols, 1), minor=True)
     ax.set_yticks(np.arange(-0.5, rows, 1), minor=True)
     ax.grid(which="minor", color="#333333", linestyle="-", linewidth=1)
+
+    ax.tick_params(which="minor", bottom=False, left=False)
+    
     ax.set_xticks([])
     ax.set_yticks([])
     for spine in ax.spines.values():
-        spine.set_visible(False)
+        spine.set_visible(True)
+        spine.set_color("#555555")
+        spine.set_linewidth(1.5)
+
+    # Adicionando uma legenda
+    legend_elements = [
+        mpatches.Patch(color=COLOR_START, label='Início'),
+        mpatches.Patch(color=COLOR_END, label='Destino'),
+        mpatches.Patch(color=COLOR_WALL, label='Obstáculo (Parede)'),
+        mpatches.Patch(color=COLOR_FREE, label='Caminho Livre'),
+        mpatches.Patch(color=COLOR_OPEN, label='Fronteira (Abertos)'),
+        mpatches.Patch(color=COLOR_CLOSED, label='Explorados (Fechados)'),
+        mpatches.Patch(color=COLOR_PATH, label='Caminho Encontrado')
+    ]
+    
+    # Posiciona a legenda do lado de fora do eixo principal (à direita)
+    ax.legend(
+        handles=legend_elements, 
+        loc='center left', 
+        bbox_to_anchor=(1.02, 0.5), 
+        frameon=False, 
+        labelcolor='white',
+        fontsize=10
+    )
 
     return fig, ax, im
 
@@ -263,22 +290,35 @@ def update_maze_figure(ax, im, base_img, start, end, path, open_set, closed_set,
     text_artists.clear()
 
     rows = base_img.shape[0]
+    
+    # Calcula o tamanho da fonte dinamicamente com base no tamanho do grid
+    f_size = max(4, int(140 / rows))
+    gh_size = max(3, int(100 / rows))
+
     if show_costs and rows <= 25:
         relevant = open_set | closed_set | set(path)
         for (r, c) in relevant:
             vals = costs.get((r, c))
             if not vals:
                 continue
-            f_val = f"{vals['f']:.1f}" if isinstance(vals["f"], float) else str(vals["f"])
-            g_val = f"{vals['g']:.1f}" if isinstance(vals["g"], float) else str(vals["g"])
-            h_val = f"{vals['h']:.1f}" if isinstance(vals["h"], float) else str(vals["h"])
+            
+            # Função auxiliar para remover casas decimais inúteis (ex: 40.0 vira 40)
+            def fmt(v):
+                if isinstance(v, (int, float)):
+                    return f"{int(v)}" if float(v).is_integer() else f"{v:.1f}"
+                return str(v)
 
+            f_val = fmt(vals['f'])
+            g_val = fmt(vals['g'])
+            h_val = fmt(vals['h'])
+
+            # Aplica as fontes dinâmicas e aproxima levemente o G e H do centro
             text_artists.append(ax.text(c, r, f_val, ha="center", va="center",
-                                         color="white", fontsize=8, fontweight="bold"))
-            text_artists.append(ax.text(c - 0.4, r - 0.35, g_val, ha="left", va="top",
-                                         color="#ffb266", fontsize=6))
-            text_artists.append(ax.text(c + 0.4, r - 0.35, h_val, ha="right", va="top",
-                                         color="#66ff66", fontsize=6))
+                                         color="white", fontsize=f_size, fontweight="bold"))
+            text_artists.append(ax.text(c - 0.38, r - 0.35, g_val, ha="left", va="top",
+                                         color="#ffc1ae", fontsize=gh_size, fontweight="bold"))
+            text_artists.append(ax.text(c + 0.38, r - 0.35, h_val, ha="right", va="top",
+                                         color="#b2ffb2", fontsize=gh_size, fontweight="bold"))
 
 
 def render_metrics(metric_path, metric_explored, metric_status, state):
@@ -323,10 +363,10 @@ def main():
         div { text-align: left; }
         [data-testid="stImage"] { display: flex; justify-content: center; align-items: center; width: 100% !important; }
         [data-testid="stImage"] img {
-            max-height: 75vh !important;
-            width: auto !important;
+            max-height: 80vh !important;
+            width: 80vw !important;
             object-fit: contain !important;
-            border-radius: 8px;
+            margin-top: 1rem;
         }
         section[data-testid="stSidebar"] {
             width: 450px !important;
@@ -343,12 +383,29 @@ def main():
             display: inline !important;
             visibility: inline !important;
         }
-        div[data-testid="stPopover"]{
-            color: rgb(79,146,79) !important;
-        }
-        div[data-testid="stPopover"] > div{
+        button[data-testid="stPopoverButton"]{
             border: 1px solid rgba(79, 146, 79, 0.5) !important;
             border-radius: 10px !important;
+            justify-content: space-between;
+        }
+        button[data-testid="stPopoverButton"] > div[data-testid="stMarkdownContainer"] {
+            width: 100%;
+        }
+        span[data-testid="stIconMaterial"]{
+            color: rgb(79, 146, 79) !important;
+        }
+        [data-testid="stMetric"]{
+            background-color: #191919;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        [data-testid="stMetricLabel"]{
+            font-size: 20px;
+        }
+        div[data-testid="stMetricValue"]{
+            font-size: 20px;
         }
         </style>
         """,
@@ -368,10 +425,11 @@ def main():
     info_html = f"""
             <div style='background-color: #1e1e1e; padding: 15px; border-radius: 5px; border-left: 2px solid {primary_color}; font-size: 16px; margin-bottom: 15px;'>
                 <b style='color: {primary_color};'>Busca Informada: Algoritmo A*</b><br>
-                O algoritmo A* possui complexidade de tempo de <b>O(b^d)</b> no pior caso, onde <i>b</i> é o fator de ramificação e <i>d</i> a profundidade da solução.<br><br>
-                Para encontrar o menor caminho eficientemente, o A* avalia <b>F(n) = G(n) + H(n)</b> para cada quadro:<br>
-                <b style='color: {primary_color};'>•</b> <b>G(n)</b>: Custo exato desde a origem.<br>
-                <b style='color: {primary_color};'>•</b> <b>H(n)</b>: Estimativa heurística até o destino.
+                O Algoritmo A* (A Estrela) possui complexidade de tempo de <b>O(b^d)</b> no pior caso, em que <i>b</i> é o fator de ramificação e <i>d</i> é a profundidade da solução.<br><br>
+                Para encontrar o menor caminho de forma eficiente, ele avalia <b>F(n) = G(n) + H(n)</b> para cada nó:<br>
+                <b style='color: {primary_color};'>•</b> <b>G(n)</b>: custo exato do caminho desde a origem até o nó atual.<br>
+                <b style='color: {primary_color};'>•</b> <b>H(n)</b>: estimativa heurística do custo do nó atual até o destino.<br>
+                <b style='color: {primary_color};'>•</b> <b>F(n)</b>: custo estimado total do caminho, utilizado para determinar quais nós devem ser explorados primeiro.
             </div>
             """
     with st.sidebar.popover("Explicação e Complexidade", icon=":material/chat_info:", use_container_width=True):
@@ -382,10 +440,10 @@ def main():
     with st.sidebar.form("maze_config_form"):
         st.subheader("Mapa do Labirinto")
         st.radio("Tamanho", list(SIZE_OPTIONS.keys()), key="cfg_size", horizontal=True)
-        st.slider("Densidade de Obstáculos (%)", min_value=0, max_value=50, step=5, key="cfg_density")
+        st.slider("Quantidade de Obstáculos (%)", min_value=0, max_value=50, step=5, key="cfg_density")
 
         col_apply, col_reset = st.columns(2)    
-        aplicar = col_apply.form_submit_button(":material/check: Aplicar e gerar", type="primary", use_container_width=True)
+        aplicar = col_apply.form_submit_button(":material/check: Aplicar e Gerar", type="primary", use_container_width=True)
         resetar = col_reset.form_submit_button("↺ Resetar", use_container_width=True)
 
     st.sidebar.write(" ")
@@ -395,12 +453,12 @@ def main():
     # ---------------------------------------------------------
 
     diagonal_enabled = st.sidebar.toggle(
-        ":primary[:material/launch:] Permitir movimento diagonal", value=False, key="diagonal_enabled",
+        ":primary[:material/launch:] Permitir Movimento Diagonal", value=False, key="diagonal_enabled",
         help="Desligado: heurística de Manhattan (4 direções). Ligado: heurística Octile (8 direções).",
     )
     algo_label = "Octile (8 direções)" if diagonal_enabled else "Manhattan (4 direções)"
 
-    show_costs = st.sidebar.toggle(":primary[:material/calculate:] Exibir Cálculos nos Quadros", value=False, key="cfg_show_costs", help="Exibe os valores de F, G e H em cada nó explorado. Pode poluir a tela em grids grandes.")
+    show_costs = st.sidebar.toggle(":primary[:material/calculate:] Exibir Cálculos nos Quadros", value=True, key="cfg_show_costs", help="Exibe os valores de F, G e H em cada nó explorado. Pode poluir a tela em grids grandes.")
 
     animar = st.sidebar.toggle(":primary[:material/slideshow:] Ativar Animação", value=True, help="Visualiza o progresso do algoritmo passo a passo.")
     
@@ -431,7 +489,7 @@ def main():
 
     with col_metrics:
         st.header("Estatísticas")
-        st.caption(f"Heurística ativa: **{algo_label}**")
+        st.caption(f"Heurística Ativa: **{algo_label}**")
         metric_path = st.empty()
         metric_explored = st.empty()
         metric_status = st.empty()
@@ -453,7 +511,7 @@ def main():
                     
                     # Salva a imagem em memória para manter o CSS ativo sem piscar a tela
                     buf = io.BytesIO()
-                    fig.savefig(buf, format="png", bbox_inches="tight", facecolor=fig.get_facecolor(), pad_inches=0.1)
+                    fig.savefig(buf, format="png", dpi=200, bbox_inches="tight", facecolor=fig.get_facecolor(), pad_inches=0.1)
                     buf.seek(0)
                     chart_placeholder.image(buf)
                     
@@ -475,7 +533,7 @@ def main():
         update_maze_figure(ax, im, base_img, start_node, end_node, path, open_set, closed_set, costs, show_costs, text_artists)
         
         buf = io.BytesIO()
-        fig.savefig(buf, format="png", bbox_inches="tight", facecolor=fig.get_facecolor(), pad_inches=0.1)
+        fig.savefig(buf, format="png", dpi=300, bbox_inches="tight", facecolor=fig.get_facecolor(), pad_inches=0.1)
         buf.seek(0)
         chart_placeholder.image(buf)
         
@@ -483,7 +541,7 @@ def main():
         # Mostra o labirinto ocioso enquanto o usuário não clica em Iniciar
         update_maze_figure(ax, im, base_img, start_node, end_node, [], set(), set(), {}, show_costs, text_artists)
         buf = io.BytesIO()
-        fig.savefig(buf, format="png", bbox_inches="tight", facecolor=fig.get_facecolor(), pad_inches=0.1)
+        fig.savefig(buf, format="png", dpi=200, bbox_inches="tight", facecolor=fig.get_facecolor(), pad_inches=0.1)
         buf.seek(0)
         chart_placeholder.image(buf)
         render_metrics(metric_path, metric_explored, metric_status, None)
