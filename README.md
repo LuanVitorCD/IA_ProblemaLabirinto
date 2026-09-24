@@ -1,22 +1,17 @@
-# Problema do Labirinto com Algoritmo A* ⭐
-
-Este repositório contém um projeto da disciplina de Inteligência Artificial, desenvolvido pelo grupo **Ana, Luan e Wesley**. O objetivo é resolver o problema de encontrar o caminho mais curto em um labirinto (grid) desde um ponto de origem até um destino, utilizando o algoritmo de busca informada **A* (A Estrela)**.
+# Problema do Labirinto com Algoritmo A*
 
 ## 📌 Sobre o Projeto
 
-O problema de *Pathfinding* (busca de caminhos) consiste em navegar por um ambiente com obstáculos para encontrar a rota mais eficiente entre dois pontos. Para resolver esse problema computacionalmente, utilizamos o algoritmo **A***, amplamente reconhecido na área de Inteligência Artificial e desenvolvimento de jogos pela sua eficiência e precisão na determinação do menor trajeto.
+O problema de *Pathfinding* (busca de caminhos) consiste em navegar por um ambiente com obstáculos para determinar a rota mais eficiente entre dois pontos. Neste projeto, o objetivo é encontrar o caminho mais curto em um labirinto (grid), partindo de um ponto de origem até um destino, utilizando o algoritmo de busca informada **A* (A Estrela)**.
 
-O projeto demonstra visualmente como o algoritmo toma decisões, avaliando caminhos promissores através de cálculos de custo e estimativas matemáticas (heurísticas), descartando rotas ineficientes.
+Esse algoritmo é amplamente reconhecido na área de Inteligência Artificial e no desenvolvimento de jogos pela sua eficiência e precisão na determinação do menor trajeto. O projeto demonstra visualmente como o algoritmo toma decisões, avaliando caminhos promissores através de cálculos de custo e estimativas matemáticas (heurísticas), descartando rotas ineficientes.
 
-## ⭐ O que é o Algoritmo A*?
+## ⭐ Definição do Algoritmo A*
 
 O A* (A Estrela) é um algoritmo de busca em grafos que encontra o caminho de menor custo de um nó inicial até um nó objetivo. Ele se destaca por ser um exemplo clássico de **busca informada** (ou heurística). 
 
-Diferente de algoritmos cegos (como a busca em largura) que exploram todas as direções igualmente, o A* é "inteligente" e direcionado. Ele decide qual nó explorar a seguir baseando-se em uma função matemática $F(p)$ associada a cada nó (célula) do grid:
+Diferente de algoritmos cegos (como a busca em largura) que exploram todas as direções igualmente, o A* é "inteligente" e direcionado. Ele decide qual nó explorar a seguir baseando-se em uma função matemática $F(n)$ associada a cada nó (célula) do grid:
 
-$$F(p) = \text{custo}(p) + \text{estimativa}(p)$$
-
-No contexto do nosso código, essa fórmula é representada classicamente por:
 $$F(n) = G(n) + H(n)$$
 
 Onde:
@@ -43,7 +38,7 @@ Para funcionar, o A* gerencia duas coleções de nós:
         *   Se o vizinho já estava na **Lista Aberta**, verifica-se se o novo $G(n)$ calculado pelo caminho atual é *menor* que o $G(n)$ antigo. Se sim, significa que encontramos um "atalho" para esse vizinho. Atualiza-se o "Pai" para o nó atual e recalcula-se $F(n)$.
 3.  Se a **Lista Aberta** esvaziar e o destino não tiver sido alcançado, o caminho está bloqueado (sem solução).
 
-## ⚙️ Como o Algoritmo A* foi implementado neste projeto
+## ⚙️ Implementação do Algoritmo A*
 
 O núcleo matemático do algoritmo encontra-se em `main.py`, desacoplado da lógica de exibição, utilizando uma função geradora (yield) para permitir a animação passo a passo da interface.
 
@@ -51,7 +46,7 @@ Abaixo, detalhamos a implementação:
 
 ### 1. Custos de Movimentação (Constantes)
 *   **Código:** `STEP_ORTHO = 1.0` e `STEP_DIAG = math.sqrt(2)`
-*   **Explicação:** O custo de mover-se para as laterais/cima/baixo é exato ($1$). Se a opção de diagonal estiver ativa na interface, o passo diagonal custa a raiz de 2 ($\approx 1.414$), pois a diagonal de um quadrado de lado $1$ pela Teorema de Pitágoras $h = \sqrt{a^2 + b^2} \rightarrow h = \sqrt{1^2 + 1^2} = \sqrt{2}$.
+*   **Explicação:** O custo de mover-se para as laterais/cima/baixo é exato ($1$). Se a opção de diagonal estiver ativa na interface, o passo diagonal custa a raiz de 2 ($\approx 1.414$), pois a diagonal de um quadrado de lado $1$ pelo Teorema de Pitágoras $h = \sqrt{a^2 + b^2} \rightarrow h = \sqrt{1^2 + 1^2} = \sqrt{2}$.
 
 ### 2. A Heurística ($H$)
 *   **Código:** Função `calc_heuristic(a, b, diagonal)`
@@ -103,22 +98,22 @@ IA_ProblemaLabirinto/
 ├── .streamlit/          
 │   └── config.toml      # Configurações de tema e exibição do Streamlit
 ├── .gitignore           # Arquivos ignorados pelo controle de versão do Git
-├── main.py    # Código principal com a lógica do A* e interface
+├── main.py              # Código principal com a lógica do A* e interface
 ├── README.md            # Este arquivo de documentação
 └── requirements.txt     # Dependências necessárias para rodar o projeto
 ```
 
-## 💻 Como rodar localmente
+## 💻 Execução Local
 
 Siga os passos abaixo para executar a aplicação no seu computador:
 
 1.  **Clone este repositório:**
     ```bash
-    git clone https://github.com/seu-usuario/IA_ProblemaLabirinto.git
+    git clone https://github.com/LuanVitorCD/IA_ProblemaLabirinto.git
     cd IA_ProblemaLabirinto
     ```
 
-2.  **Crie e ative um ambiente virtual (Recomendado):**
+2.  **Crie e ative um ambiente virtual (recomendado):**
     *   No Windows:
         ```bash
         python -m venv venv
@@ -131,6 +126,7 @@ Siga os passos abaixo para executar a aplicação no seu computador:
         ```
 
 3.  **Instale as dependências:**
+
     Certifique-se de estar com o ambiente virtual ativado e execute:
     ```bash
     pip install -r requirements.txt
