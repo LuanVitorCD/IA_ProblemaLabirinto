@@ -2,7 +2,7 @@
 
 ## 📌 Sobre o Projeto
 
-O problema de *Pathfinding* (busca de caminhos) consiste em navegar por um ambiente com obstáculos para determinar a rota mais eficiente entre dois pontos. Neste projeto, o objetivo é encontrar o caminho mais curto em um labirinto (grid), partindo de um ponto de origem até um destino, utilizando o algoritmo de busca informada **A*** **(A Estrela)**. No seu pior cenário possui a complexidade exponencial $O(b^d)$.
+O problema de *Pathfinding* (busca de caminhos) consiste em navegar por um ambiente com obstáculos para determinar a rota mais eficiente entre dois pontos. Neste projeto, o objetivo é encontrar o caminho mais curto em um labirinto (grid), partindo de um ponto de origem até um destino, utilizando o algoritmo de busca informada **A*** **(A Estrela)**. No seu pior cenário, possui a complexidade exponencial $O(b^d)$.
 
 Esse algoritmo é amplamente reconhecido na área de Inteligência Artificial e no desenvolvimento de jogos pela sua eficiência e precisão na determinação do menor trajeto. O projeto demonstra visualmente como o algoritmo toma decisões, avaliando caminhos promissores através de cálculos de custo e estimativas matemáticas (heurísticas), descartando rotas ineficientes.
 
@@ -86,7 +86,7 @@ Abaixo, detalhamos a implementação:
 
 *   **Geração Dinâmica do Labirinto:** Cria labirintos que são garantidamente solucionáveis e permite que o usuário adicione ou diminua a densidade (quantidade) de obstáculos de forma visual, controlando também o tamanho do grid.
 *   **Animação da Busca:** Acompanhe passo a passo, em tempo real, quais nós estão sendo avaliados (amarelo), explorados (roxo) e o caminho sendo trilhado.
-*   **Exibição dos Cálculos:** Nos mapas menores, é possível ativar a visão avançada que escreve por cima do grid, em tempo real, os valores de F, G e H ($F(n) = G(n) + H(n)$) daquele exato ponto avaliado, como um modo "debug" visual do algoritmo.
+*   **Exibição dos Cálculos:** Nos mapas menores, é possível ativar a visão avançada que escreve por cima do grid, em tempo real, os valores de F, G e H ($$F(n) = G(n) + H(n)$$) daquele exato ponto avaliado, como um modo "debug" visual do algoritmo.
 *   **Permissão de Movimento Diagonal:** Com o apertar de um botão, o usuário permite que o algoritmo use movimentos em diagonal para cortar caminho (e a IA automaticamente altera o cálculo da heurística correspondente).
 
 ## 📂 Organização do Projeto
