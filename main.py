@@ -371,9 +371,6 @@ def main():
         section[data-testid="stSidebar"] {
             width: 450px !important;
         }
-        [data-testid="stSidebarContent"] {
-            overflow-y: hidden !important;
-        }
         section[data-testid="stSidebar"] > div:not([data-testid="stSidebarContent"]) {
             display: none !important;
             width: 0px !important;
