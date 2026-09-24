@@ -404,6 +404,9 @@ def main():
         div[data-testid="stMetricValue"]{
             font-size: 20px;
         }
+        div[data-testid="stMetricDelta"]{
+            color: #4f924f;
+        }
         </style>
         """,
         unsafe_allow_html=True,
